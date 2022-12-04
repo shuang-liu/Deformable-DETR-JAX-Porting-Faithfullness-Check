@@ -62,7 +62,7 @@ class ConvertCocoPolysToMask(object):
         self.return_masks = return_masks
 
     def __call__(self, image, target):
-        w, h = image.size
+        h, w = image.shape[:2]
 
         image_id = target["image_id"]
         image_id = torch.tensor([image_id])

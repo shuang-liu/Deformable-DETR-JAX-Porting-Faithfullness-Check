@@ -25,6 +25,8 @@ from datasets import build_dataset, get_coco_api_from_dataset
 from engine import evaluate, train_one_epoch
 from models import build_model
 
+import tensorflow as tf
+
 
 def get_args_parser():
     parser = argparse.ArgumentParser('Deformable DETR Detector', add_help=False)
@@ -319,6 +321,7 @@ def main(args):
 
 
 if __name__ == '__main__':
+    tf.config.experimental.set_visible_devices([], 'GPU')
     parser = argparse.ArgumentParser('Deformable DETR training and evaluation script', parents=[get_args_parser()])
     args = parser.parse_args()
     if args.output_dir:

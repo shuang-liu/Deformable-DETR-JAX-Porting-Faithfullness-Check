@@ -16,6 +16,8 @@ import PIL
 import torch
 import torchvision.transforms as T
 import torchvision.transforms.functional as F
+import math
+import tensorflow as tf
 
 from util.box_ops import box_xyxy_to_cxcywh
 from util.misc import interpolate
@@ -85,12 +87,12 @@ def resize(image, target, size, max_size=None):
     # size can be min_size (scalar) or (w, h) tuple
 
     def get_size_with_aspect_ratio(image_size, size, max_size=None):
-        w, h = image_size
+        h, w = image_size 
         if max_size is not None:
             min_original_size = float(min((w, h)))
             max_original_size = float(max((w, h)))
             if max_original_size / min_original_size * size > max_size:
-                size = int(round(max_size * min_original_size / max_original_size))
+                size = int(math.floor(max_size * min_original_size / max_original_size))
 
         if (w <= h and w == size) or (h <= w and h == size):
             return (h, w)
@@ -110,13 +112,13 @@ def resize(image, target, size, max_size=None):
         else:
             return get_size_with_aspect_ratio(image_size, size, max_size)
 
-    size = get_size(image.size, size, max_size)
-    rescaled_image = F.resize(image, size)
+    size = get_size(image.shape[:2], size, max_size)
+    rescaled_image = tf.image.resize(image, size, antialias=False)
 
     if target is None:
         return rescaled_image, None
 
-    ratios = tuple(float(s) / float(s_orig) for s, s_orig in zip(rescaled_image.size, image.size))
+    ratios = tuple(float(s) / float(s_orig) for s, s_orig in zip([rescaled_image.shape[1], rescaled_image.shape[0]], [image.shape[1], image.shape[0]]))
     ratio_width, ratio_height = ratios
 
     target = target.copy()
@@ -235,7 +237,8 @@ class RandomSelect(object):
 
 class ToTensor(object):
     def __call__(self, img, target):
-        return F.to_tensor(img), target
+        img = img.numpy().transpose((2, 0, 1))
+        return torch.FloatTensor(img), target
 
 
 class RandomErasing(object):

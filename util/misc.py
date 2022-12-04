@@ -29,7 +29,7 @@ from torch import Tensor
 import torchvision
 if float(torchvision.__version__[:3]) < 0.5:
     import math
-    from torchvision.ops.misc import _NewEmptyTensorOp
+    # from torchvision.ops.misc import _NewEmptyTensorOp
     def _check_size_scale_factor(dim, size, scale_factor):
         # type: (int, Optional[List[int]], Optional[float]) -> None
         if size is None and scale_factor is None:
@@ -320,7 +320,8 @@ def nested_tensor_from_tensor_list(tensor_list: List[Tensor]):
     # TODO make this more general
     if tensor_list[0].ndim == 3:
         # TODO make it support different-sized images
-        max_size = _max_by_axis([list(img.shape) for img in tensor_list])
+        # max_size = _max_by_axis([list(img.shape) for img in tensor_list])
+        max_size = [3, 1333, 1333]
         # min_size = tuple(min(s) for s in zip(*[img.shape for img in tensor_list]))
         batch_shape = [len(tensor_list)] + max_size
         b, c, h, w = batch_shape

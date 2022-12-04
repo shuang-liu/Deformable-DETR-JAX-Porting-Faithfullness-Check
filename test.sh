@@ -1,0 +1,1 @@
+configs/r50_deformable_detr_plus_iterative_bbox_refinement.sh --resume r50_deformable_detr_plus_iterative_bbox_refinement-checkpoint.pth --eval --batch_size=4

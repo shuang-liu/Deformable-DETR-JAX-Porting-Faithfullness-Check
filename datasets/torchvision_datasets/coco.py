@@ -15,6 +15,7 @@ import os
 import os.path
 import tqdm
 from io import BytesIO
+import tensorflow as tf
 
 
 class CocoDetection(VisionDataset):
@@ -57,8 +58,12 @@ class CocoDetection(VisionDataset):
             if path not in self.cache.keys():
                 with open(os.path.join(self.root, path), 'rb') as f:
                     self.cache[path] = f.read()
-            return Image.open(BytesIO(self.cache[path])).convert('RGB')
-        return Image.open(os.path.join(self.root, path)).convert('RGB')
+            # return Image.open(BytesIO(self.cache[path])).convert('RGB')
+            file_path = self.cache[path]
+        else:
+            file_path = os.path.join(self.root, path)
+        #return Image.open(os.path.join(self.root, path)).convert('RGB')
+        return tf.image.decode_image(tf.io.read_file(file_path), dtype=tf.float32, channels=3)
 
     def __getitem__(self, index):
         """
